@@ -16,6 +16,8 @@ namespace
 constexpr int MIN_LENGHT_NAME = 3;
 constexpr int MAX_LENGHT_NAME = 8;
 constexpr int MAX_ATTEMPTS_GENERATE = 100;
+constexpr int MIN_HOUSE_WIDTH = 4;
+constexpr int MIN_HOUSE_HEIGHT= 4;
 
 std::string generateRandomString() 
 {  
@@ -38,7 +40,6 @@ std::string generateRandomString()
 PointF calculateHouseCenter(int minX, int minY, int width, int height) 
 {
     PointF center;
-    // Центр вычисляется как min + (width-1)/2.0 для точного геометрического центра
     center.x = minX + (width - 1) / 2.0;
     center.y = minY + (height - 1) / 2.0;
     return center;
@@ -48,7 +49,7 @@ PointF calculateHouseCenter(int minX, int minY, int width, int height)
 PointF calculateStationCenter(int x, int y) 
 {
     PointF center;
-    // Станция занимает одну ячейку, поэтому ее центр - центр этой ячейки
+    // Станция занимает одну ячейку, поэтому ее центр - середина этой ячейки
     center.x = x + 0.5;
     center.y = y + 0.5;
     return center;
@@ -59,7 +60,6 @@ double calculateDistance(const PointF& p1, const PointF& p2)
 {
     return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2));
 }
-
 
 } // anonymous namespace
 
@@ -144,13 +144,6 @@ House MapHandler::getHouseFromPixels(const std::vector<Point>& pixels) const
         throw std::invalid_argument("Пустой набор пикселей для анализа дома");
     }
 
-    if (pixels.size() < 4) 
-    {
-        throw std::invalid_argument(
-            "Дом слишком маленький. Найдено " + std::to_string(pixels.size()) + " пикселей, требуется минимум 4"
-        );
-    }
-    
     int minX = pixels[0].x, maxX = pixels[0].x;
     int minY = pixels[0].y, maxY = pixels[0].y;
     
@@ -164,8 +157,16 @@ House MapHandler::getHouseFromPixels(const std::vector<Point>& pixels) const
     
     int houseWidth = maxX - minX + 1;
     int houseHeight = maxY - minY + 1;
-    int expectedPixels = houseWidth * houseHeight;
+    if (houseWidth < MIN_HOUSE_WIDTH || houseHeight < MIN_HOUSE_HEIGHT) 
+    {
+        throw std::invalid_argument(
+            "Дом не соответствует требованиям: размер " + std::to_string(houseWidth) + "x" + 
+            std::to_string(houseHeight) + ", минимальный размер " + 
+            std::to_string(MIN_HOUSE_WIDTH) + "x" + std::to_string(MIN_HOUSE_HEIGHT)
+        );
+    }
     
+    int expectedPixels = houseWidth * houseHeight;
     if (expectedPixels != static_cast<int>(pixels.size())) 
     {
         throw std::invalid_argument(
@@ -363,7 +364,7 @@ void MapHandler::printObjects() const
     {
         std::cout << station.name << " (" << station.position.x << ", " << station.position.y << ")" << std::endl;
     }
-    
+
     std::cout << std::endl;
 }
 
