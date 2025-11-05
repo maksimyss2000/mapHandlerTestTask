@@ -8,7 +8,7 @@ make
 ./mapHandler ../input/test_map.bin 
 
 # Пример запуска
-<img width="726" height="661" alt="image" src="https://github.com/user-attachments/assets/c3333b83-1f10-48f1-b938-f57af130bb1f" />
+<img width="810" height="599" alt="изображение" src="https://github.com/user-attachments/assets/03b5d96e-a846-433b-9d78-05025f6ec29d" />
 
 # Детали
 
